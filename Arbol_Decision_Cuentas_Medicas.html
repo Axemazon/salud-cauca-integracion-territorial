@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Árbol de Decisiones – Revisión Administrativa de Cuentas Médicas</title>
+<style>
+  :root {
+    --verde: #2e7d32;
+    --verde-claro: #e8f5e9;
+    --rojo: #c62828;
+    --rojo-claro: #ffebee;
+    --azul: #1565c0;
+    --azul-claro: #e3f2fd;
+    --amarillo: #f9a825;
+    --amarillo-claro: #fffde7;
+    --gris: #37474f;
+    --gris-claro: #eceff1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f5f5;
+    color: #212121;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--verde);
+    color: white;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  header .escudo {
+    font-size: 2.4rem;
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  header p {
+    font-size: 0.78rem;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+
+  .contenedor {
+    max-width: 820px;
+    margin: 32px auto;
+    padding: 0 16px;
+  }
+
+  .progreso-wrap {
+    background: white;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .progreso-bar {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progreso-fill {
+    height: 100%;
+    background: var(--verde);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .progreso-texto {
+    font-size: 0.82rem;
+    color: var(--gris);
+    white-space: nowrap;
+  }
+
+  .nodo {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .nodo-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .nodo-num {
+    background: var(--verde);
+    color: white;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .nodo-pregunta {
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #212121;
+    line-height: 1.5;
+  }
+
+  .nodo-norma {
+    font-size: 0.76rem;
+    color: #757575;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .nodo-info {
+    background: var(--azul-claro);
+    border-left: 4px solid var(--azul);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 0.84rem;
+    color: #1a237e;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  .opciones {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+  .btn-si { background: var(--verde-claro); color: var(--verde); border: 2px solid var(--verde); }
+  .btn-no { background: var(--rojo-claro); color: var(--rojo); border: 2px solid var(--rojo); }
+  .btn-parcial { background: var(--amarillo-claro); color: #e65100; border: 2px solid var(--amarillo); }
+  .btn-accion { background: var(--azul-claro); color: var(--azul); border: 2px solid var(--azul); }
+
+  .resultado {
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease;
+  }
+
+  .resultado-ok { background: var(--verde-claro); border: 2px solid var(--verde); }
+  .resultado-devolver { background: var(--rojo-claro); border: 2px solid var(--rojo); }
+  .resultado-pendiente { background: var(--amarillo-claro); border: 2px solid var(--amarillo); }
+  .resultado-remitir { background: var(--azul-claro); border: 2px solid var(--azul); }
+
+  .resultado-titulo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .resultado-ok .resultado-titulo { color: var(--verde); }
+  .resultado-devolver .resultado-titulo { color: var(--rojo); }
+  .resultado-pendiente .resultado-titulo { color: #e65100; }
+  .resultado-remitir .resultado-titulo { color: var(--azul); }
+
+  .resultado p { font-size: 0.9rem; line-height: 1.6; margin-bottom: 10px; }
+
+  .resultado ul { margin: 8px 0 0 18px; font-size: 0.88rem; line-height: 1.7; }
+
+  .acciones-resultado {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .btn-reiniciar {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--gris);
+    color: white;
+    transition: all 0.2s;
+  }
+
+  .btn-reiniciar:hover { background: #263238; }
+
+  .historial {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .historial h3 {
+    font-size: 0.82rem;
+    color: #757575;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .historial-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.83rem;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #424242;
+    line-height: 1.4;
+  }
+
+  .historial-item:last-child { border-bottom: none; }
+
+  .historial-dot { color: var(--verde); font-weight: 700; flex-shrink: 0; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.76rem;
+    color: #9e9e9e;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="escudo">⚕</div>
+  <div>
+    <h1>Árbol de Decisiones – Revisión Administrativa de Cuentas Médicas</h1>
+    <p>Dirección de Integración Territorial · Secretaría Departamental de Salud del Cauca · Contrato 1729-2026</p>
+  </div>
+</header>
+
+<div class="contenedor">
+
+  <div class="progreso-wrap">
+    <div class="progreso-bar">
+      <div class="progreso-fill" id="progresoFill" style="width:0%"></div>
+    </div>
+    <div class="progreso-texto" id="progresoTexto">Paso 1 de 9</div>
+  </div>
+
+  <div id="historialWrap" class="historial" style="display:none;">
+    <h3>Recorrido del expediente</h3>
+    <div id="historialItems"></div>
+  </div>
+
+  <div id="contenidoPrincipal"></div>
+
+</div>
+
+<footer>
+  Desarrollado en el marco del Contrato de Prestación de Servicios Profesionales No. 1729-2026 · Proceso DC-SSC-CD-150-2026<br>
+  Dirección de Integración Territorial – Secretaría Departamental de Salud del Cauca · Febrero 2026
+</footer>
+
+<script>
+const TOTAL_PASOS = 9;
+
+const nodos = {
+
+  n1: {
+    paso: 1,
+    pregunta: "¿La cuenta médica tiene número de radicado formal asignado por la Dirección de Integración Territorial con fecha de recepción registrada?",
+    norma: "Cláusula 2.2 Contrato 1729-2026 · Ley 1122 de 2007 Art. 13",
+    info: "La radicación formal es el punto de inicio del proceso. Sin número de radicado no hay trazabilidad del expediente ni conteo de términos para el reconocimiento.",
+    opciones: [
+      { texto: "✔ Sí, tiene radicado y fecha", clase: "btn-si", siguiente: "n2" },
+      { texto: "✘ No tiene radicado", clase: "btn-no", siguiente: "r_radicar" }
+    ],
+    historial: "Verificación de radicado formal"
+  },
+
+  n2: {
+    paso: 2,
+    pregunta: "¿La factura electrónica presentada tiene CUFE válido y el número de autorización DIAN se encuentra vigente?",
+    norma: "Decreto 358 de 2020 · Resolución DIAN 000042 de 2020 · Res. Min. Salud 3047/2008",
+    info: "Verificar en el XML de la factura que el CUFE corresponde al documento. El prefijo y rango de numeración deben estar dentro de la autorización vigente. Una factura con CUFE inválido no puede tramitarse.",
+    opciones: [
+      { texto: "✔ Factura válida", clase: "btn-si", siguiente: "n3" },
+      { texto: "✘ CUFE inválido o autorización vencida", clase: "btn-no", siguiente: "r_factura" }
+    ],
+    historial: "Validación factura electrónica y CUFE"
+  },
+
+  n3: {
+    paso: 3,
+    pregunta: "¿Los RIPS entregados corresponden al tipo de atención y están completos en todos los archivos requeridos (AC/AP/AU/AM/AT/AH según corresponda)?",
+    norma: "Resolución 3374 de 2000 · Resolución 1915 de 2018 · Circular Ext. SS 001-2017",
+    info: "Verificar que los tipos de archivo RIPS coincidan con el servicio facturado: urgencias requiere AU, hospitalización AH, consulta externa AC, procedimientos AP. Los valores totales en RIPS deben coincidir con la factura (diferencia admisible: cero).",
+    opciones: [
+      { texto: "✔ RIPS completos y consistentes", clase: "btn-si", siguiente: "n4" },
+      { texto: "✘ RIPS incompletos o inconsistentes", clase: "btn-no", siguiente: "r_rips" },
+      { texto: "◑ RIPS parciales – diferencia menor", clase: "btn-parcial", siguiente: "r_rips_parcial" }
+    ],
+    historial: "Verificación de RIPS"
+  },
+
+  n4: {
+    paso: 4,
+    pregunta: "¿La población atendida corresponde a una competencia de reconocimiento del Departamento del Cauca (población vulnerable sin aseguramiento, Art. 32 Ley 1438, o eventos de competencia departamental o nacional)?",
+    norma: "Ley 715 de 2001 Art. 43 · Ley 1438 de 2011 Art. 32 · Decreto 4747 de 2007",
+    info: "Si el usuario estaba asegurado al momento de la atención y la EPS es solvente, la cuenta debe tramitarse directamente ante la EPS. Solo los casos de urgencias en población sin cobertura, población vinculada o eventos especiales son competencia del Departamento.",
+    opciones: [
+      { texto: "✔ Sí, es competencia departamental", clase: "btn-si", siguiente: "n5" },
+      { texto: "✘ No, corresponde a EPS u otra entidad", clase: "btn-no", siguiente: "r_remitir" }
+    ],
+    historial: "Verificación de competencia departamental"
+  },
+
+  n5: {
+    paso: 5,
+    pregunta: "¿Los soportes de elegibilidad del paciente (documento de identidad, certificación de condición poblacional o afiliación) están incluidos y son legibles?",
+    norma: "Decreto 4747 de 2007 · Res. Min. Salud 3047/2008 · Circular 030 de 2006 MPS",
+    info: "Para población vinculada: constancia de no aseguramiento. Para urgencias Art. 32: acta de atención de urgencias. Para migrantes o personas sin documentos: constancia de atención humanitaria según protocolos vigentes.",
+    opciones: [
+      { texto: "✔ Soportes de elegibilidad completos", clase: "btn-si", siguiente: "n6" },
+      { texto: "✘ Faltan soportes de elegibilidad", clase: "btn-no", siguiente: "r_elegibilidad" }
+    ],
+    historial: "Verificación soportes de elegibilidad del paciente"
+  },
+
+  n6: {
+    paso: 6,
+    pregunta: "¿Los soportes clínicos requeridos según el tipo de atención están completos (epicrisis, orden médica, consentimiento informado, junta médica para alto costo)?",
+    norma: "Res. Min. Salud 1995 de 1999 · Res. 3047 de 2008 Anexo Técnico · Ley 1751 de 2015",
+    info: "Hospitalización y urgencias: requieren epicrisis o resumen de historia clínica. Procedimientos ambulatorios: orden médica. Medicamentos de alto costo: soporte de comité o junta médica. Procedimientos invasivos: consentimiento informado.",
+    opciones: [
+      { texto: "✔ Soportes clínicos completos", clase: "btn-si", siguiente: "n7" },
+      { texto: "✘ Faltan soportes clínicos", clase: "btn-no", siguiente: "r_clinicos" }
+    ],
+    historial: "Verificación soportes clínicos"
+  },
+
+  n7: {
+    paso: 7,
+    pregunta: "¿El expediente tiene algún requerimiento externo activo (acción de tutela, derecho de petición, solicitud de ente de control) vinculado a esta cuenta?",
+    norma: "Decreto 2591 de 1991 · Ley 1437 de 2011 (CPACA) Art. 14 · Ley 1474 de 2011",
+    info: "Si existe requerimiento externo activo, la respuesta tiene términos perentorios (tutela: 10 días hábiles; PQR: 15 días hábiles). El trámite del acto administrativo debe coordinarse con la respuesta al requerimiento para dar información coherente.",
+    opciones: [
+      { texto: "✔ No hay requerimiento activo", clase: "btn-si", siguiente: "n8" },
+      { texto: "⚠ Sí, hay requerimiento activo", clase: "btn-no", siguiente: "n7b" }
+    ],
+    historial: "Verificación de requerimientos externos activos"
+  },
+
+  n7b: {
+    paso: 7,
+    pregunta: "¿Ya se proyectó la respuesta al requerimiento externo informando el estado actual del trámite?",
+    norma: "Decreto 2591 de 1991 · CPACA Art. 14 · Circular Conj. Min. Salud 005-2021",
+    info: "La respuesta debe indicar: estado del expediente, soportes verificados, fecha estimada de proyección del acto administrativo. Debe estar coordinada con el área jurídica para tutelas. Solo cuando la respuesta esté proyectada se continúa con el acto administrativo.",
+    opciones: [
+      { texto: "✔ Respuesta ya proyectada", clase: "btn-si", siguiente: "n8" },
+      { texto: "✘ Respuesta pendiente", clase: "btn-no", siguiente: "r_requerimiento" }
+    ],
+    historial: "Proyección de respuesta a requerimiento externo"
+  },
+
+  n8: {
+    paso: 8,
+    pregunta: "¿El valor a reconocer fue validado contra la tabla de tarifas aplicable (SOAT, ISS 2001, contrato vigente entre la IPS y la entidad) y corresponde al servicio efectivamente prestado?",
+    norma: "Decreto 4747 de 2007 Art. 17 · Res. 3047/2008 · Acuerdo 256 de 2001 CNSSS",
+    info: "Para servicios de urgencias sin contrato: aplican tarifas SOAT o ISS 2001 según la naturaleza del servicio. Para servicios con contrato vigente: verificar que la tarifa cobrada corresponda al contrato y no supere el techo pactado.",
+    opciones: [
+      { texto: "✔ Valor validado y correcto", clase: "btn-si", siguiente: "n9" },
+      { texto: "✘ Valor superior a tarifa aplicable", clase: "btn-no", siguiente: "r_glosa" }
+    ],
+    historial: "Validación de tarifas y valor a reconocer"
+  },
+
+  n9: {
+    paso: 9,
+    pregunta: "¿La IPS se encuentra habilitada, sin sanciones activas y con RPS vigente en el REPS (Registro Especial de Prestadores de Salud)?",
+    norma: "Decreto 780 de 2016 Art. 2.5.1.2 · Res. Min. Salud 3100 de 2019 · Ley 1438/2011 Art. 56",
+    info: "Verificar en el REPS (reps.sispro.gov.co) que la IPS esté habilitada para los servicios facturados. Una IPS con habilitación suspendida o sancionada no puede recibir pago por parte del Departamento.",
+    opciones: [
+      { texto: "✔ IPS habilitada y sin sanciones", clase: "btn-si", siguiente: "r_aprobar" },
+      { texto: "✘ IPS suspendida o sancionada", clase: "btn-no", siguiente: "r_inhabilitada" }
+    ],
+    historial: "Verificación habilitación IPS en REPS"
+  }
+};
+
+const resultados = {
+
+  r_radicar: {
+    tipo: "pendiente",
+    icono: "📋",
+    titulo: "Acción requerida: Radicar expediente",
+    descripcion: "La cuenta médica no puede ingresar al proceso de revisión sin número de radicado formal.",
+    pasos: [
+      "Asignar número de radicado en el consecutivo de la Dirección de Integración Territorial",
+      "Registrar fecha de recepción, IPS remitente, No. de factura y valor en la Matriz de Control",
+      "Notificar a la IPS que el expediente quedó radicado e indicar número asignado",
+      "Iniciar conteo de términos para el reconocimiento a partir de la fecha de radicado"
+    ]
+  },
+
+  r_factura: {
+    tipo: "devolver",
+    icono: "🚫",
+    titulo: "Devolver a IPS: Factura electrónica inválida",
+    descripcion: "No es posible tramitar el reconocimiento de una cuenta médica sin factura electrónica con CUFE válido y autorización DIAN vigente.",
+    pasos: [
+      "Notificar a la IPS por escrito indicando el número de factura con el problema identificado",
+      "Indicar el error específico: CUFE no encontrado / autorización vencida / datos del emisor no coinciden",
+      "Suspender el cómputo de términos hasta que la IPS allegue factura corregida",
+      "Registrar la devolución en la Matriz de Control con fecha y motivo"
+    ]
+  },
+
+  r_rips: {
+    tipo: "devolver",
+    icono: "🚫",
+    titulo: "Devolver a IPS: RIPS incompletos o inconsistentes",
+    descripcion: "Los RIPS son requisito esencial para el proceso de revisión administrativa. Sin ellos no es posible verificar la coherencia entre el servicio facturado y la atención prestada.",
+    pasos: [
+      "Identificar los archivos RIPS faltantes o los campos con inconsistencia",
+      "Emitir comunicación a la IPS describiendo el requerimiento específico",
+      "Indicar términos para corrección (normalmente 15 días hábiles)",
+      "Suspender términos de reconocimiento y registrar en la Matriz de Control"
+    ]
+  },
+
+  r_rips_parcial: {
+    tipo: "pendiente",
+    icono: "⚠️",
+    titulo: "Glosa parcial: Inconsistencia menor en RIPS",
+    descripcion: "Existe una diferencia entre el valor facturado y los RIPS que puede resolverse mediante conciliación con la IPS.",
+    pasos: [
+      "Cuantificar la diferencia exacta entre factura y RIPS",
+      "Comunicar a la IPS para que allegue nota de ajuste o corrección de RIPS",
+      "Si la diferencia es inferior al 1%: puede tramitarse con nota aclaratoria",
+      "Si la diferencia es significativa: aplicar glosa por ese concepto en el acto administrativo"
+    ]
+  },
+
+  r_remitir: {
+    tipo: "remitir",
+    icono: "📤",
+    titulo: "Remitir: No es competencia del Departamento",
+    descripcion: "La cuenta médica corresponde a servicios cuyo pago es responsabilidad de la EPS aseguradora u otra entidad del SGSSS.",
+    pasos: [
+      "Expedir comunicación a la IPS informando que la cuenta no es de competencia departamental",
+      "Indicar la entidad responsable del reconocimiento y los datos de contacto",
+      "Si el usuario interpuso tutela o PQR: responder al despacho indicando la entidad competente",
+      "Registrar la remisión en la Matriz de Control con fecha y entidad a la que se remite"
+    ]
+  },
+
+  r_elegibilidad: {
+    tipo: "devolver",
+    icono: "🚫",
+    titulo: "Devolver a IPS: Soportes de elegibilidad incompletos",
+    descripcion: "Sin acreditar la condición poblacional del paciente no es posible establecer la competencia del Departamento para el pago.",
+    pasos: [
+      "Especificar al prestador qué documentos están ausentes o ilegibles",
+      "Para población sin documentos de identidad: indicar el procedimiento de identificación alterna (Circular 030 MPS)",
+      "Registrar devolución en la Matriz de Control y suspender términos",
+      "Solicitar a trabajo social o área de vinculación apoyo si el caso lo requiere"
+    ]
+  },
+
+  r_clinicos: {
+    tipo: "devolver",
+    icono: "🚫",
+    titulo: "Devolver a IPS: Soportes clínicos incompletos",
+    descripcion: "Los soportes clínicos son el respaldo probatorio de la atención prestada. Sin ellos el acto administrativo carece de fundamento.",
+    pasos: [
+      "Detallar por escrito los documentos clínicos faltantes según tipo de atención",
+      "Recordar a la IPS que la entrega de historias clínicas es una obligación legal (Res. 1995/1999)",
+      "Indicar términos de subsanación y consecuencias del no envío",
+      "Registrar devolución con fecha y motivo en la Matriz de Control"
+    ]
+  },
+
+  r_requerimiento: {
+    tipo: "pendiente",
+    icono: "⏳",
+    titulo: "Acción prioritaria: Proyectar respuesta al requerimiento externo",
+    descripcion: "Existe un requerimiento externo con términos perentorios que debe atenderse antes o simultáneamente con el acto administrativo.",
+    pasos: [
+      "Identificar el tipo de requerimiento (tutela / PQR / ente de control) y los términos de respuesta",
+      "Verificar el estado actual del expediente y proyectar respuesta usando la plantilla correspondiente",
+      "Coordinar con el área jurídica si es tutela con orden de pago inminente",
+      "Una vez proyectada la respuesta, retomar el flujo de verificación para el acto administrativo"
+    ]
+  },
+
+  r_glosa: {
+    tipo: "pendiente",
+    icono: "⚠️",
+    titulo: "Glosa por valor: Aplicar ajuste tarifario",
+    descripcion: "El valor cobrado supera la tarifa reconocida por la normatividad o el contrato vigente.",
+    pasos: [
+      "Calcular el valor a reconocer según tarifa SOAT, ISS 2001 o contrato según corresponda",
+      "Proyectar el acto administrativo por el valor correcto e incluir la glosa explicada",
+      "Notificar a la IPS el valor glosado y el fundamento normativo",
+      "La IPS tiene derecho a controvertir la glosa dentro de los términos del Decreto 4747/2007"
+    ]
+  },
+
+  r_inhabilitada: {
+    tipo: "devolver",
+    icono: "🚫",
+    titulo: "Suspender trámite: IPS sin habilitación vigente",
+    descripcion: "No es posible reconocer pago a una IPS que no cuenta con habilitación vigente para los servicios facturados.",
+    pasos: [
+      "Verificar en el REPS (reps.sispro.gov.co) el estado actual de la habilitación",
+      "Si la sanción fue posterior a la prestación del servicio: consultar con el área jurídica si el pago procede por los servicios ya prestados",
+      "Documentar el hallazgo en la Matriz de Control",
+      "Notificar a la supervisora para decisión institucional antes de proceder"
+    ]
+  },
+
+  r_aprobar: {
+    tipo: "ok",
+    icono: "✅",
+    titulo: "Expediente aprobado – Proyectar Acto Administrativo de Reconocimiento y Pago",
+    descripcion: "El expediente cumple todos los requisitos documentales, normativos y tarifarios para que se proyecte el acto administrativo de reconocimiento y pago.",
+    pasos: [
+      "Registrar el expediente como 'Aprobado para acto administrativo' en la Matriz de Control",
+      "Proyectar la resolución de reconocimiento y pago con el número consecutivo asignado",
+      "Incluir en el considerando: No. de factura, IPS, período, población atendida, fundamento normativo y valor a reconocer",
+      "Remitir el proyecto de resolución a la Directora Técnica para revisión y firma",
+      "Una vez firmada, gestionar el trámite presupuestal con la Secretaría de Hacienda",
+      "Notificar a la IPS el acto administrativo y los pasos del trámite de pago"
+    ]
+  }
+};
+
+let historial = [];
+let pasoActual = 1;
+
+function irA(id) {
+  const contenedor = document.getElementById('contenidoPrincipal');
+  const historialWrap = document.getElementById('historialWrap');
+  const historialItems = document.getElementById('historialItems');
+
+  if (nodos[id]) {
+    const n = nodos[id];
+    pasoActual = n.paso;
+    actualizarProgreso(pasoActual);
+
+    if (n.historial) {
+      historial.push(n.historial);
+      historialWrap.style.display = 'block';
+      historialItems.innerHTML = historial.map(h =>
+        `<div class="historial-item"><span class="historial-dot">●</span>${h}</div>`
+      ).join('');
+    }
+
+    let opcionesHTML = n.opciones.map(op =>
+      `<button class="btn ${op.clase}" onclick="irA('${op.siguiente}')">${op.texto}</button>`
+    ).join('');
+
+    contenedor.innerHTML = `
+      <div class="nodo">
+        <div class="nodo-header">
+          <div class="nodo-num">${n.paso}</div>
+          <div>
+            <div class="nodo-pregunta">${n.pregunta}</div>
+            <div class="nodo-norma">${n.norma}</div>
+          </div>
+        </div>
+        ${n.info ? `<div class="nodo-info">💡 ${n.info}</div>` : ''}
+        <div class="opciones">${opcionesHTML}</div>
+      </div>`;
+
+  } else if (resultados[id]) {
+    const r = resultados[id];
+    actualizarProgreso(TOTAL_PASOS);
+    historialWrap.style.display = 'block';
+    historialItems.innerHTML = historial.map(h =>
+      `<div class="historial-item"><span class="historial-dot">●</span>${h}</div>`
+    ).join('');
+
+    const pasosHTML = r.pasos.map(p => `<li>${p}</li>`).join('');
+
+    contenedor.innerHTML = `
+      <div class="resultado resultado-${r.tipo}">
+        <div class="resultado-titulo">${r.icono} ${r.titulo}</div>
+        <p>${r.descripcion}</p>
+        <strong>Pasos a seguir:</strong>
+        <ul>${pasosHTML}</ul>
+        <div class="acciones-resultado">
+          <button class="btn-reiniciar" onclick="reiniciar()">↩ Nuevo expediente</button>
+        </div>
+      </div>`;
+  }
+}
+
+function actualizarProgreso(paso) {
+  const pct = Math.min((paso / TOTAL_PASOS) * 100, 100);
+  document.getElementById('progresoFill').style.width = pct + '%';
+  document.getElementById('progresoTexto').textContent = `Paso ${paso} de ${TOTAL_PASOS}`;
+}
+
+function reiniciar() {
+  historial = [];
+  pasoActual = 1;
+  document.getElementById('historialWrap').style.display = 'none';
+  document.getElementById('historialItems').innerHTML = '';
+  actualizarProgreso(1);
+  irA('n1');
+}
+
+// Iniciar
+irA('n1');
+</script>
+</body>
+</html>

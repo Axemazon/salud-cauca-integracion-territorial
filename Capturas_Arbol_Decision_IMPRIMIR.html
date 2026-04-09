@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Capturas – Árbol de Decisiones Cuentas Médicas</title>
+<style>
+  @media print {
+    .no-print { display: none; }
+    .paso { page-break-inside: avoid; }
+    body { font-size: 10pt; }
+  }
+  body { font-family: Arial, sans-serif; background: #f0f0f0; margin: 0; padding: 20px; }
+  .cabecera {
+    background: #2e7d32; color: white; padding: 16px 24px;
+    border-radius: 8px; margin-bottom: 20px;
+  }
+  .cabecera h1 { font-size: 14pt; margin: 0 0 4px 0; }
+  .cabecera p { font-size: 9pt; margin: 0; opacity: 0.85; }
+  .btn-imprimir {
+    background: #1565c0; color: white; border: none;
+    padding: 10px 24px; font-size: 11pt; border-radius: 6px;
+    cursor: pointer; margin-bottom: 20px; display: block;
+  }
+  .btn-imprimir:hover { background: #0d47a1; }
+  .paso {
+    background: white; border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    margin-bottom: 16px; overflow: hidden;
+  }
+  .paso-header {
+    background: #2e7d32; color: white;
+    padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .paso-num {
+    background: white; color: #2e7d32;
+    border-radius: 50%; width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11pt; flex-shrink: 0;
+  }
+  .paso-header h2 { font-size: 10.5pt; margin: 0; font-weight: 600; }
+  .paso-body { padding: 14px 16px; }
+  .paso-pregunta { font-size: 10.5pt; font-weight: 600; color: #212121; margin-bottom: 6px; }
+  .paso-norma { font-size: 8pt; color: #757575; font-style: italic; margin-bottom: 8px; }
+  .paso-info {
+    background: #e3f2fd; border-left: 4px solid #1565c0;
+    padding: 8px 12px; font-size: 9pt; color: #1a237e;
+    border-radius: 0 4px 4px 0; margin-bottom: 10px; line-height: 1.5;
+  }
+  .opciones { display: flex; gap: 10px; flex-wrap: wrap; }
+  .op {
+    padding: 8px 14px; border-radius: 6px;
+    font-size: 9pt; font-weight: 600; border: 2px solid;
+    flex: 1; min-width: 120px;
+  }
+  .op-si  { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+  .op-no  { background: #ffebee; color: #c62828; border-color: #c62828; }
+  .op-par { background: #fffde7; color: #e65100; border-color: #f9a825; }
+  .resultado-bloque {
+    background: white; border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    margin-bottom: 12px; overflow: hidden;
+  }
+  .res-header { padding: 10px 16px; font-weight: 700; font-size: 10.5pt; }
+  .res-ok     { background: #e8f5e9; color: #1b5e20; border-left: 5px solid #2e7d32; }
+  .res-dev    { background: #ffebee; color: #b71c1c; border-left: 5px solid #c62828; }
+  .res-pend   { background: #fffde7; color: #e65100; border-left: 5px solid #f9a825; }
+  .res-remit  { background: #e3f2fd; color: #0d47a1; border-left: 5px solid #1565c0; }
+  .res-body   { padding: 10px 16px; font-size: 9pt; line-height: 1.5; }
+  .res-body ul { margin: 6px 0 0 16px; }
+  .res-body li { margin-bottom: 3px; }
+  .seccion-titulo {
+    font-size: 12pt; font-weight: 700; color: #2e7d32;
+    border-bottom: 2px solid #2e7d32; padding-bottom: 4px;
+    margin: 24px 0 12px 0;
+  }
+  .flecha {
+    text-align: center; font-size: 16pt; color: #9e9e9e; margin: -6px 0 4px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="cabecera">
+  <h1>Árbol de Decisiones – Revisión Administrativa de Cuentas Médicas</h1>
+  <p>Dirección de Integración Territorial · Secretaría Departamental de Salud del Cauca · Contrato 1729-2026 · Proceso DC-SSC-CD-150-2026</p>
+</div>
+
+<button class="btn-imprimir no-print" onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
+
+<div class="seccion-titulo">Flujo de decisiones – 9 pasos secuenciales</div>
+
+<!-- PASO 1 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">1</div>
+    <h2>Verificación de radicado formal</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿La cuenta médica tiene número de radicado formal asignado por la Dirección de Integración Territorial con fecha de recepción registrada?</div>
+    <div class="paso-norma">Cláusula 2.2 Contrato 1729-2026 · Ley 1122 de 2007 Art. 13</div>
+    <div class="paso-info">💡 La radicación formal es el punto de inicio del proceso. Sin número de radicado no hay trazabilidad del expediente ni conteo de términos para el reconocimiento.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ Sí, tiene radicado y fecha → Paso 2</div>
+      <div class="op op-no">✘ No tiene radicado → Acción: Radicar</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 2 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">2</div>
+    <h2>Validación de factura electrónica y CUFE</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿La factura electrónica presentada tiene CUFE válido y el número de autorización DIAN se encuentra vigente?</div>
+    <div class="paso-norma">Decreto 358 de 2020 · Resolución DIAN 000042 de 2020 · Res. Min. Salud 3047/2008</div>
+    <div class="paso-info">💡 Verificar en el XML de la factura que el CUFE corresponde al documento. El prefijo y rango de numeración deben estar dentro de la autorización vigente.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ Factura válida → Paso 3</div>
+      <div class="op op-no">✘ CUFE inválido / autorización vencida → Devolver a IPS</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 3 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">3</div>
+    <h2>Verificación de RIPS</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿Los RIPS entregados corresponden al tipo de atención y están completos en todos los archivos requeridos (AC/AP/AU/AM/AT/AH según corresponda)?</div>
+    <div class="paso-norma">Resolución 3374 de 2000 · Resolución 1915 de 2018 · Circular Ext. SS 001-2017</div>
+    <div class="paso-info">💡 Verificar que los tipos de archivo RIPS coincidan con el servicio facturado. Los valores totales en RIPS deben coincidir con la factura (diferencia admisible: cero).</div>
+    <div class="opciones">
+      <div class="op op-si">✔ RIPS completos y consistentes → Paso 4</div>
+      <div class="op op-no">✘ RIPS incompletos o inconsistentes → Devolver a IPS</div>
+      <div class="op op-par">◑ RIPS parciales / diferencia menor → Glosa parcial</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 4 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">4</div>
+    <h2>Verificación de competencia departamental</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿La población atendida corresponde a una competencia de reconocimiento del Departamento del Cauca (población vulnerable sin aseguramiento, Art. 32 Ley 1438, o eventos de competencia departamental)?</div>
+    <div class="paso-norma">Ley 715 de 2001 Art. 43 · Ley 1438 de 2011 Art. 32 · Decreto 4747 de 2007</div>
+    <div class="paso-info">💡 Si el usuario estaba asegurado y la EPS es solvente, la cuenta va directamente a la EPS. Solo los casos sin cobertura o eventos especiales son competencia del Departamento.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ Sí, es competencia departamental → Paso 5</div>
+      <div class="op op-no">✘ Corresponde a EPS u otra entidad → Remitir</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 5 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">5</div>
+    <h2>Verificación soportes de elegibilidad del paciente</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿Los soportes de elegibilidad del paciente (documento de identidad, certificación de condición poblacional o afiliación) están incluidos y son legibles?</div>
+    <div class="paso-norma">Decreto 4747 de 2007 · Res. Min. Salud 3047/2008 · Circular 030 de 2006 MPS</div>
+    <div class="paso-info">💡 Para población vinculada: constancia de no aseguramiento. Para urgencias Art. 32: acta de atención de urgencias. Para personas sin documentos: constancia de atención humanitaria.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ Soportes de elegibilidad completos → Paso 6</div>
+      <div class="op op-no">✘ Faltan soportes de elegibilidad → Devolver a IPS</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 6 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">6</div>
+    <h2>Verificación soportes clínicos</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿Los soportes clínicos requeridos según el tipo de atención están completos (epicrisis, orden médica, consentimiento informado, junta médica para alto costo)?</div>
+    <div class="paso-norma">Res. Min. Salud 1995 de 1999 · Res. 3047 de 2008 Anexo Técnico · Ley 1751 de 2015</div>
+    <div class="paso-info">💡 Hospitalización y urgencias: epicrisis. Procedimientos ambulatorios: orden médica. Medicamentos alto costo: soporte de junta o comité médico. Procedimientos invasivos: consentimiento informado.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ Soportes clínicos completos → Paso 7</div>
+      <div class="op op-no">✘ Faltan soportes clínicos → Devolver a IPS</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 7 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">7</div>
+    <h2>Verificación de requerimientos externos activos</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿El expediente tiene algún requerimiento externo activo (acción de tutela, derecho de petición, solicitud de ente de control) vinculado a esta cuenta?</div>
+    <div class="paso-norma">Decreto 2591 de 1991 · Ley 1437 de 2011 (CPACA) Art. 14 · Ley 1474 de 2011</div>
+    <div class="paso-info">💡 Si existe requerimiento activo, la respuesta tiene términos perentorios (tutela: 10 días hábiles; PQR: 15 días hábiles). El trámite del acto administrativo debe coordinarse con la respuesta al requerimiento.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ No hay requerimiento activo → Paso 8</div>
+      <div class="op op-no">⚠ Sí hay requerimiento → ¿Ya proyectó respuesta?</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 8 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">8</div>
+    <h2>Validación de tarifas y valor a reconocer</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿El valor a reconocer fue validado contra la tabla de tarifas aplicable (SOAT, ISS 2001, contrato vigente) y corresponde al servicio efectivamente prestado?</div>
+    <div class="paso-norma">Decreto 4747 de 2007 Art. 17 · Res. 3047/2008 · Acuerdo 256 de 2001 CNSSS</div>
+    <div class="paso-info">💡 Para urgencias sin contrato: tarifas SOAT o ISS 2001. Para servicios con contrato vigente: verificar que la tarifa no supere el techo pactado.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ Valor validado y correcto → Paso 9</div>
+      <div class="op op-no">✘ Valor superior a tarifa aplicable → Glosa tarifaria</div>
+    </div>
+  </div>
+</div>
+
+<div class="flecha">↓</div>
+
+<!-- PASO 9 -->
+<div class="paso">
+  <div class="paso-header">
+    <div class="paso-num">9</div>
+    <h2>Verificación habilitación IPS en REPS</h2>
+  </div>
+  <div class="paso-body">
+    <div class="paso-pregunta">¿La IPS se encuentra habilitada, sin sanciones activas y con RPS vigente en el REPS (Registro Especial de Prestadores de Salud)?</div>
+    <div class="paso-norma">Decreto 780 de 2016 Art. 2.5.1.2 · Res. Min. Salud 3100 de 2019 · Ley 1438/2011 Art. 56</div>
+    <div class="paso-info">💡 Verificar en el REPS (reps.sispro.gov.co) que la IPS esté habilitada para los servicios facturados. Una IPS con habilitación suspendida no puede recibir pago del Departamento.</div>
+    <div class="opciones">
+      <div class="op op-si">✔ IPS habilitada y sin sanciones → ✅ APROBAR</div>
+      <div class="op op-no">✘ IPS suspendida o sancionada → Suspender trámite</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTADOS -->
+<div class="seccion-titulo">Resultados posibles del árbol de decisiones</div>
+
+<div class="resultado-bloque">
+  <div class="res-header res-ok">✅ Expediente aprobado – Proyectar Acto Administrativo de Reconocimiento y Pago</div>
+  <div class="res-body">Todos los requisitos documentales, normativos y tarifarios están cumplidos. Se proyecta la resolución de reconocimiento con número consecutivo, se remite a la Directora Técnica para firma y se inicia el trámite presupuestal con la Secretaría de Hacienda.</div>
+</div>
+
+<div class="resultado-bloque">
+  <div class="res-header res-dev">🚫 Devolver a IPS – Soportes incompletos o factura inválida</div>
+  <div class="res-body">Se notifica a la IPS por escrito con el motivo específico, se especifican los documentos faltantes y los términos de subsanación, y se suspende el cómputo de términos hasta la corrección. Se registra en la matriz de control.</div>
+</div>
+
+<div class="resultado-bloque">
+  <div class="res-header res-pend">⚠️ Acción prioritaria – Atender requerimiento externo o aplicar glosa</div>
+  <div class="res-body">Si existe tutela, PQR o requerimiento de ente de control, se proyecta respuesta coordinada con el área jurídica antes de continuar con el acto administrativo. Si hay glosa tarifaria, se proyecta el acto por el valor correcto con nota aclaratoria a la IPS.</div>
+</div>
+
+<div class="resultado-bloque">
+  <div class="res-header res-remit">📤 Remitir – No es competencia del Departamento</div>
+  <div class="res-body">Se expide comunicación a la IPS indicando la entidad responsable del reconocimiento. Si hay tutela vinculada, se responde al despacho judicial indicando la entidad competente. Se registra la remisión con fecha en la matriz de control.</div>
+</div>
+
+<br>
+<p style="text-align:center;font-size:8pt;color:#9e9e9e;">
+  Desarrollado en el marco del Contrato de Prestación de Servicios Profesionales No. 1729-2026 · Proceso DC-SSC-CD-150-2026<br>
+  Dirección de Integración Territorial – Secretaría Departamental de Salud del Cauca · Febrero 2026
+</p>
+
+</body>
+</html>
