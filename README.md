@@ -125,8 +125,3 @@ salud-cauca-integracion-territorial/
 Estas herramientas apoyan la gestión de la **Dirección de Integración Territorial** de la Secretaría Departamental de Salud del Cauca en el proceso de revisión, validación y aprobación de cuentas médicas radicadas por IPS públicas y privadas para reconocimiento y pago con cargo a recursos de salud pública departamental.
 
 El árbol de decisiones digitaliza y estandariza el proceso manual de revisión, reduciendo el riesgo de omisiones, asegurando la trazabilidad de cada expediente y sirviendo como instrumento de capacitación para el equipo técnico.
-
----
-
-*Herramientas desarrolladas para la Dirección de Integración Territorial · Secretaría Departamental de Salud del Cauca*
-*Contrato 1729-2026 · Proceso DC-SSC-CD-150-2026*
